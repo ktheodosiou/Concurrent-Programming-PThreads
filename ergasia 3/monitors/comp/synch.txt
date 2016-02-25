@@ -1,0 +1,5 @@
+q_label=0;
+flag_label=0;
+pthread_mutex_init(&mtx_label, NULL);
+pthread_mutex_init(&cond_label, NULL);
+pthread_mutex_lock(&cond_label);

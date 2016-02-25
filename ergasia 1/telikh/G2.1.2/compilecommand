@@ -1,0 +1,1 @@
+gcc mandel.c mandelcalc.c -lpthread -o mandel -L /usr/X11R6/lib -lX11

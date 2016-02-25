@@ -1,0 +1,49 @@
+DOWN 0 0;      15 00 00
+GLOAD reg1 1;  03 01 01
+LLOAD reg2 0;  01 02 00
+ADD reg1 reg2; 0a 01 02
+GSTORE reg2 4; 07 02 04
+PRINT 0 2;     19 00 02
+SET reg3 c8;   09 03 c8
+SLEEP reg3 0;  18 03 00
+UP 0 0;        16 00 00
+EXIT 0 0;      1a 00 00
+
+
+Header:
+	magicBeg     de ad be af 
+	globalsSize  06
+	numOfBodies  01
+	totCodeSize  00 1e
+	numOfTasks   03
+Global Init:    
+	globalInit   01 00 48 69 00 00
+Task Body       
+	magicBody    de ad c0 de
+	localsSize   01
+	codeSize     1e
+	code         15 00 00
+	             03 01 01
+	             01 02 00
+	             0a 01 02
+	             07 02 04
+	             19 00 02
+	             09 03 c8
+	             18 03 00
+	             16 00 00
+	             1a 00 00    
+Task:          
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      31
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      32
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      33
+Footer:         
+	magicEnd     fe e1 de ad 
+

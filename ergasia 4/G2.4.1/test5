@@ -1,0 +1,194 @@
+00:bsem mtx init 1;
+01:bsem waitMtx init 0;
+02:MAX_CARS = 3;
+03:carsOnBridge = 0;
+04:String msg = "C" + '\0'
+
+car:
+	reg1 = MAX_CARS
+do{
+label:
+	down(mtx);
+	reg2 = carsOnBridge;
+	reg4 = 0;
+	reg4 = reg4 + reg2;
+	reg4 = reg4 - reg1;
+	while(reg4 >= 0){
+		up(mtx);
+		jump label;
+	}
+	reg3 = 1;
+	reg2 = reg2 + reg3;
+	carsOnBridge = reg2;
+	PRINT;
+	up(mtx);
+	
+	YIELD;
+	
+	down(mtx);
+	reg2 = carsOnBridge;
+	reg4 = 0;
+	reg4 = reg4 + reg2;
+	reg4 = reg4 - reg1;
+	if(reg4 >= 0){
+		reg2 = 0;
+		carsOnBridge = reg2;
+		up(waitMtx);
+	}
+	up(mtx);
+}while(1);
+
+Header:
+	magicBeg     de ad be af 
+	globalsSize  06
+	numOfBodies  01
+	totCodeSize  00 57
+	numOfTasks   09
+Global Init:    
+	globalInit   01 00 05 00 43 00
+Task Body       
+	magicBody    de ad c0 de
+	localsSize   01
+	codeSize     57
+	code         
+00: GLOAD 01 02;  03 01 02
+01: DOWN 00 00;   15 00 00
+02: GLOAD 02 03;  03 02 03
+03: SET 04 00;    09 04 00
+04: ADD 04 02;    0a 04 02
+05: SUB 04 01;    0b 04 01
+06: BRLZ 04 03;   11 04 03
+07: 	UP 00 00;   16 00 00
+08: 	BRA 00 -7;  14 00 f9
+09: SET 03 01;    09 03 01
+0a: ADD 02 03;    0a 02 03
+0b: GSTORE 02 03; 07 02 03
+0c: PRINT 00 04;  19 00 04
+0d: UP 00 00;     16 00 00
+
+0e: YIELD 00 00;  17 00 00
+
+0f: DOWN 00 00;   15 00 00
+10: GLOAD 02 03;  03 02 03
+11: SET 04 00;    09 04 00
+12: ADD 04 02;    0a 04 02
+13: SUB 04 01;    0b 04 01
+14: BRLZ 04 05;   11 04 05
+15: 	SET 02 00;  09 02 00
+16:	GSTORE 02 03;07 02 03
+17:	SET 05 03; 09 05 0a
+18:	SLEEP 00;   18 05 00
+19: UP 00 00;     16 00 00
+1a: SET 07 30;		09 07 0a
+1b: SLEEP 07 00;  18 07 00
+1c: BRA 00 -27;   14 00 e5
+
+Task:          
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:          
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:          
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:          
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:          
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:          
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Task:           
+	magicTask    de ad ba be
+	taskBody     01
+	taskArg      00
+Footer:         
+	magicEnd     fe e1 de ad 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

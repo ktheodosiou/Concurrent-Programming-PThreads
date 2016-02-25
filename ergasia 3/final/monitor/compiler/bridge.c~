@@ -1,0 +1,248 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define N 10
+
+int i_blue, i_red;
+int un_count_b, un_count_r;
+int count_b, count_r;
+int check_blue,check_red;
+
+void *red(void *num_r);
+void *blue(void *num_b);
+
+int main(int argc, char *argv[]){
+	char c;
+	int i;
+	int check;
+	int *array_r, *array_b;
+	pthread_t *p_red, *p_blue;
+	
+	synch(main);
+	
+	synch(red);
+	
+	synch(blue);
+	
+	synch(mtx);
+	
+	while(1) {
+		i_blue = 0;
+		i_red = 0;
+		count_b = 0;
+		count_r = 0;
+		un_count_b = 0;
+		un_count_r = 0;
+		check_blue = 0;
+		check_red = 0;
+		
+		printf("Press 0 to insert a red car, 1 for blue car or 'q' to exit\n");
+		do{
+			c = getchar();
+			if(c=='0'){
+				//red
+				i_red++;
+			}
+			else if(c=='1'){
+				//blue
+				i_blue++;
+			}
+			else if(c=='q') {
+				return(0);
+			}
+		}while(c!='\n');
+		
+		if(i_red==0 && i_blue==0){
+			return(0);
+		}
+		printf("Α new day dawned\n");
+		
+		p_red = (pthread_t*)malloc(sizeof(pthread_t)*i_red);
+		if(p_red==NULL){
+			printf("Problem with memory allocation\n");
+			return(2);
+		}
+		p_blue = (pthread_t*)malloc(sizeof(pthread_t)*i_blue);
+		if(p_blue==NULL){
+			printf("Problem with memory allocation\n");
+			return(2);
+		}
+		array_r = (int*)malloc(sizeof(int)*i_red);
+		if(array_r==NULL){
+			printf("Problem with memory allocation\n");
+			return(2);
+		}
+		array_b = (int*)malloc(sizeof(int)*i_blue);
+		if(array_b==NULL){
+			printf("Problem with memory allocation\n");
+			return(2);
+		}
+		
+		printf("red %d, blue %d\n",i_red, i_blue);
+		
+		for(i=0; i<i_red; i++){
+			array_r[i] = i + 1;
+			check = pthread_create(&p_red[i], NULL, &red, &array_r[i]);
+			if(check!=0) {
+				printf("Problem to create %d thread\n", i);
+				return(7);
+			}
+		}
+		
+		for(i=0; i<i_blue; i++){
+			array_b[i] = i + 1;
+			check = pthread_create(&p_blue[i], NULL, &blue, &array_b[i]);
+			if(check!=0) {
+				printf("Problem to create %d thread\n", i);
+				return(7);
+			}
+		}
+		
+		synch_begin(main);
+		
+		synch_wait();
+		
+		synch_end(main);
+		
+		printf("End of the day\n");
+	}
+	
+	return(0);
+}
+
+void *red(void *num_r){
+	int number;
+	int local_r;
+	number = *(int *)(num_r);
+	
+	synch_begin(red);
+	
+	check_red++;
+	if(i_blue==0){
+		if(check_red>N) {
+			synch_wait();
+			count_r ++;
+			if(count_r%N!=0 && count_r!=i_red){
+				synch_notify();
+			}
+		}
+		else{
+			count_r++;
+		}
+	}
+	else {
+		synch_wait();
+		count_r ++;
+		if(count_r%N!=0 && count_r!=i_red){
+			synch_notify();
+		}
+	}
+	
+	synch_end(red);
+	
+	printf("red %d\n",number);
+	
+	synch_begin(mtx);
+	
+	un_count_r++;
+	local_r = un_count_r;
+	
+	synch_end(mtx);
+	
+	if(local_r%N == 0 || i_red == local_r) {
+		printf("count_red %d\n",local_r);
+		if(i_blue != un_count_b) {
+			synch_begin(blue);
+			
+			synch_notify();
+			
+			synch_end(blue);
+		}
+		else {
+			if(i_red == local_r) {
+				synch_begin(main);
+				
+				synch_notify();
+				
+				synch_end(main);
+			}
+			else {
+				do{
+					sleep(1);
+					synch_begin(red);
+					synch_notify()
+					synch_end(red);
+				}while(check_red-local_r<=1);
+				
+				
+				
+				
+			}
+		}
+	}
+	
+	return(NULL);
+}
+
+void *blue(void *num_b){
+	int number;
+	int local_b;
+	number = *(int *)(num_b);
+	
+	synch_begin(blue);
+	
+	check_blue++;
+	if(check_blue>N) {
+		synch_wait();
+		count_b ++;
+		if(count_b%N!=0 && count_b!=i_blue){
+			synch_notify();
+		}
+	}
+	else{
+		count_b++;
+	}
+	
+	synch_end(blue);
+	
+	printf("blue %d\n",number);
+	
+	synch_begin(mtx);
+	
+	un_count_b++;
+	local_b = un_count_b;
+	
+	synch_end(mtx);
+	
+	if(local_b%N == 0 || i_blue == local_b) {
+		printf("count_blue %d\n",local_b);
+		if(i_red != un_count_r) {
+			synch_begin(red);
+			
+			synch_notify();
+			
+			synch_end(red);
+		}
+		else {
+			if(i_blue == local_b) {
+				synch_begin(main);
+				
+				synch_notify();
+				
+				synch_end(main);
+			}
+			else {
+				do{
+					sleep(1);
+					synch_begin(blue);
+					synch_notify();
+					synch_end(blue);
+				}while(check_blue-local_b<=1);
+				
+			}
+		}
+	}
+	return(NULL);
+}

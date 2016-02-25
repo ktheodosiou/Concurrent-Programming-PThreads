@@ -1,0 +1,3 @@
+if(q_label>0) {
+	flag_label ++;
+}

@@ -1,0 +1,4 @@
+int q_label, flag_label;
+pthread_mutex_t mtx_label;
+pthread_mutex_t cond_label;
+ 

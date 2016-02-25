@@ -1,0 +1,11 @@
+if(flag_label>0){
+	flag_label--;
+	q_label--;
+	pthread_mutex_unlock(&cond_label);
+}
+else{
+pthread_mutex_unlock(&mtx_label);
+}
+
+q_label++;
+pthread_mutex_lock(&cond_label); 

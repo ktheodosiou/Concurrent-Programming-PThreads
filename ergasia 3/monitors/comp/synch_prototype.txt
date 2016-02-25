@@ -1,0 +1,50 @@
+synch(label) {
+	int q_label, flag_label;
+	pthread_mutex_t mtx_label;
+	pthread_mutex_t cond_label;
+	
+	q_label=0;
+	flag_label=0;
+	pthread_mutex_init(&mtx_label, NULL);
+	pthread_mutex_init(&cond_label, NULL);
+	pthread_mutex_lock(&cond_label);
+}
+
+synch_begin(label) {
+	pthread_mutex_lock(&mtx_label);
+}
+
+synch_end(label) {
+	if(flag_label>0){
+		flag_label--;
+		q_label--;
+		pthread_mutex_unlock(&cond_label);
+	}
+	else{
+		pthread_mutex_unlock(&mtx_label);
+	}
+}
+
+synch_wait() {
+	if(flag_label>0){
+		flag_label--;
+		q_label--;
+		pthread_mutex_unlock(&cond_label);
+	}
+	
+	q_label++;
+	pthread_mutex_unlock(&mtx_label);
+	pthread_mutex_lock(&cond_label);
+}
+
+synch_notify() {
+	if(q_label>0) {
+		flag_label ++;
+	}
+}
+
+synch_notifyall() {
+	if(label>0) {
+		flag_label = q_label;
+	}
+}

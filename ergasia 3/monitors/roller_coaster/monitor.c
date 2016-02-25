@@ -1,0 +1,59 @@
+synch(char label) {
+	int q_label, flag_label;
+	pthread_mutex_t mtx_label;
+	pthread_mutex_t cond_label;
+	
+	q_label=0;
+	flag_label=0;
+	
+	pthread_mutex_init(&mtx_label, NULL);
+	pthread_mutex_init(&cond_label, NULL);
+	pthread_mutex_lock(&cond_label);
+}
+
+synch_beg(char label) {
+	pthread_mutex_lock(&mtx_label);
+}
+
+synch_end(char label) {
+	if(flag_label>0){
+		flag_label--;
+		q_label--;
+		pthread_mutex_unlock(&cond_label);
+	}
+	else{
+		pthread_mutex_unlock(&mtx_label);
+	}
+}
+
+synch_wait() {
+	q_label++;
+	
+	if(flag_label>0){
+		flag_label--;
+		q_label--;
+		pthread_mutex_unlock(&cond_label);
+	}
+	pthread_mutex_unlock(&mtx_label);
+	pthread_mutex_lock(&cond_label);
+}
+
+synch_notify() {
+	if(q_label>0) {
+		flag_label ++;
+	}	
+}
+
+synch_notifyall() {
+	if(label>0) {
+		flag_label = q_label;
+	}
+}
+
+μετα το notify πρεπει αμεσως να ακολουθει synch_end? 
+γιατι απο τι στιγμη που ξυπναει καποιο σημαινει οτι θα πρεπει να βγει απο το μονιτορ οποτε θα κανει synch_end
+στην περιπτωση του notify_all γινεται να γινει σειριακα το notify? δηλαδη εστω π1 μεσα στο μονιτορ και π2,π3,π4 στην ουρα q
+η π1 κανει notify_all γινεται να ειδοποιησει την πρωτη στην ουρα(δηλαδη π2) η π2 οταν τελειωσει να ειδοπο την π3 και η π3 οταν τελειωσει να ειδοποιησει την π4?
+απλα επειδη μπορει οταν γινουν notify αυτες επειτα να ξανακανουν wait και οχι synch_end στο wait θα ελεγχουμε μηπως εκρεμει να κανει καποιο notify
+
+Αν γινει notify_all και καποια απο τις διεργασιες που ξυπναει απο την ουρα ξανακοιμαται αυτη θα πρεπει να παρει σημα απο το notify_all η οχι?

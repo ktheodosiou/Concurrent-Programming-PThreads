@@ -1,0 +1,1 @@
+pthread_mutex_lock(&mtx_label);
